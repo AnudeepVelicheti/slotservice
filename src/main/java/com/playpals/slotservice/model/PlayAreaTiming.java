@@ -23,9 +23,9 @@ public class PlayAreaTiming {
 	private String day;
 	
 	@Column(name = "start_time")
-	private String startTime;
+	private int startTime;
 	
 	@Column(name = "end_time")
-	private String endTime;
+	private int endTime;
 	
 }

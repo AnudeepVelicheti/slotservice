@@ -3,11 +3,13 @@ package com.playpals.slotservice.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.Data;
 
 @Data
-@Entity(name="play_area_timing")
+@Entity
+@Table(name="play_area_timings")
 public class PlayAreaTiming {
 	
 	@Id
@@ -17,10 +19,13 @@ public class PlayAreaTiming {
 	@Column(name = "play_area_id")
 	private int playAreaId;
 	
+	@Column(name = "day")
+	private String day;
+	
 	@Column(name = "start_time")
-	private int startTime;
+	private String startTime;
 	
 	@Column(name = "end_time")
-	private int endTime;
+	private String endTime;
 	
 }

@@ -3,11 +3,13 @@ package com.playpals.slotservice.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.Data;
 
 @Data
-@Entity(name = "slots")
+@Entity
+@Table(name = "slots")
 public class Slot {
 	
 	@Id

@@ -9,6 +9,6 @@ import com.playpals.slotservice.model.Slot;
 @Service
 public interface SlotService {
 	
-	List<Slot> getSlotsByPlayArea(int playAreaId);
+	List<Slot> getSlotsByPlayArea(int playAreaId,int courtId);
 	
 }

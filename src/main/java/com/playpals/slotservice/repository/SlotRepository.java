@@ -12,7 +12,7 @@ import com.playpals.slotservice.model.Slot;
 @Repository
 public interface SlotRepository extends  JpaRepository<Slot, Integer>{
 	
-	@Query(value = "Select s.* from slots s join play_area_timings p on (s.) where ")
-	Optional<List<Slot>> findSlotsByTime(String startTime,String endTime);
+	@Query(value = "Select s.* from slots s where s.id not in( Select e.slot_id from event_slots e where e.court_id=:courtId and e.play_area_id=:playAreaId and e.date=curdate()) and s.start_time>=:startTime and s.end_time<=:endTime ",nativeQuery = true)
+	List<Slot> findSlotsByTime(int courtId,int playAreaId,int startTime,int endTime);
 
 }

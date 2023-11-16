@@ -1,12 +1,15 @@
 package com.playpals.slotservice.model;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
 
-@Table(name="play_area-courts")
+
+@Entity
+@Table(name="play_area_courts")
 @Data
 public class Courts {
 

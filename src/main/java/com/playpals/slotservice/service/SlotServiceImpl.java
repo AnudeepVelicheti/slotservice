@@ -1,10 +1,12 @@
 package com.playpals.slotservice.service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,9 +25,10 @@ public class SlotServiceImpl implements SlotService{
 	PlayAreaTimingRepository playAreaTimingRepo;
 	
 	@Override
-	public List<Slot> getSlotsByPlayArea(int playAreaId,int courtId) {
+	public List<Slot> getSlotsByPlayArea(int playAreaId,int courtId,String inputDate) {
 		List<Slot> resp=new ArrayList<>();
 		int now = LocalDate.now().getDayOfWeek();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String startTime="";
 		String today="";
 		switch (now) {
@@ -54,11 +57,19 @@ public class SlotServiceImpl implements SlotService{
 		default:
 			break;
 		}
-		System.out.println(""+today+"|"+playAreaId);
-		PlayAreaTiming playAreaTiming=playAreaTimingRepo.getSlotsByDayAndPlayArea(today, playAreaId).get();
-		int hour=LocalTime.now().getHourOfDay();
-		resp=slotRepo.findSlotsByTime(courtId,playAreaId,hour, Integer.parseInt(playAreaTiming.getEndTime()));
+		java.time.LocalDate input=java.time.LocalDate.parse(inputDate, formatter);
 		
+		System.out.println(""+today+"|"+playAreaId+"|"+LocalDate.now()+"|"+input);	
+		PlayAreaTiming playAreaTiming=playAreaTimingRepo.getSlotsByDayAndPlayArea(today, playAreaId).get();
+		int hour=LocalTime.now().getHourOfDay()+1; 
+		if(!input.toString().equals(LocalDate.now().toString()))
+		{	
+			resp=slotRepo.findSlotsByTime(courtId,playAreaId,playAreaTiming.getStartTime(),playAreaTiming.getEndTime(),input.toString());
+		}
+		else
+		{
+			resp=slotRepo.findSlotsByTime(courtId,playAreaId,hour,playAreaTiming.getEndTime(),input.toString());
+		}
 		return resp;
 	}
 

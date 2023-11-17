@@ -20,10 +20,10 @@ public class SlotServiceImpl implements SlotService{
 
 	@Autowired
 	SlotRepository slotRepo;
-	
+
 	@Autowired
 	PlayAreaTimingRepository playAreaTimingRepo;
-	
+
 	@Override
 	public List<Slot> getSlotsByPlayArea(int playAreaId,int courtId,String inputDate) {
 		List<Slot> resp=new ArrayList<>();
@@ -43,7 +43,7 @@ public class SlotServiceImpl implements SlotService{
 			break;
 		case 4:
 			today="Thursday";
-			break;	
+			break;
 		case 5:
 			today="Friday";
 			break;
@@ -52,11 +52,12 @@ public class SlotServiceImpl implements SlotService{
 			break;
 		case 7:
 			today="Sunday";
-			break;		
+			break;
 
 		default:
 			break;
 		}
+
 		java.time.LocalDate input=java.time.LocalDate.parse(inputDate, formatter);
 		
 		System.out.println(""+today+"|"+playAreaId+"|"+LocalDate.now()+"|"+input);	

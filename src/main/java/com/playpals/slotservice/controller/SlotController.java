@@ -16,23 +16,25 @@ import com.playpals.slotservice.service.CourtService;
 import com.playpals.slotservice.service.SlotService;
 
 @RestController
-public class SlotController { 
-	
+public class SlotController {
+
 	@Autowired
 	SlotService slotService;
-	
+
 	@Autowired
 	CourtService courtService;
-	
+
 	@GetMapping("/api/getSlotsByPlayAreaAndCourt")
+
 	public ResponseEntity<List<Slot>> getSlotsByPlayArea(@RequestParam("playAreaId") int playAreaId,@RequestParam("courtId") int courtId,@RequestParam("inputDate") String input)
 	{		
+
 		List<Slot> response=new ArrayList<>();
 		response=slotService.getSlotsByPlayArea(playAreaId,courtId,input);
 		return new ResponseEntity<List<Slot>>(response, HttpStatus.OK);
 	
 	}
-	
+
 	@GetMapping("/api/getCourtByPlayArea")
 	public ResponseEntity<List<Courts>> getCourtsByPlayArea(@RequestParam("playAreaId") int playAreaId,@RequestParam("sportId") int sportId)
 	{

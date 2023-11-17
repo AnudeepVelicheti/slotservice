@@ -15,4 +15,6 @@ public interface CourtRepository extends  JpaRepository<Courts, Integer>{
 
 	@Query(value = "Select s from Courts s where playAreaId=:playAreaId and sportId=:sportId")
 	Optional<List<Courts>> findCourtsByTime(int playAreaId,int sportId);
+
+
 }

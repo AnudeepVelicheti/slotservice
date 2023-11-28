@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import com.playpals.slotservice.service.CourtService;
 import com.playpals.slotservice.service.SlotService;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class SlotController {
 
 	@Autowired
@@ -27,12 +29,12 @@ public class SlotController {
 	@GetMapping("/api/getSlotsByPlayAreaAndCourt")
 
 	public ResponseEntity<List<Slot>> getSlotsByPlayArea(@RequestParam("playAreaId") int playAreaId,@RequestParam("courtId") int courtId,@RequestParam("inputDate") String input)
-	{		
+	{
 
 		List<Slot> response=new ArrayList<>();
 		response=slotService.getSlotsByPlayArea(playAreaId,courtId,input);
 		return new ResponseEntity<List<Slot>>(response, HttpStatus.OK);
-	
+
 	}
 
 	@GetMapping("/api/getCourtByPlayArea")

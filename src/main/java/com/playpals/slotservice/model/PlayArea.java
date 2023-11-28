@@ -47,6 +47,18 @@ public class PlayArea{
     @Column(name = "comments")
     private String comments;
 
+    public String getRequest() {
+        return request;
+    }
+
+    public void setRequest(String request) {
+        this.request = request;
+    }
+
+    @Getter
+    @Column(name="request")
+    private String request;
+
 
     public void setOwner(Integer owner) {
         this.owner = owner;

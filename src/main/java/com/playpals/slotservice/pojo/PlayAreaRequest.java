@@ -21,10 +21,13 @@ public class PlayAreaRequest {
     private String country;
     private Integer zipcode;
 
-    private List<Integer> timings; // Assume a simple format like "Monday 10:00-12:00"
+    private String timings; // Assume a simple format like "Monday 10:00-12:00"
     private List<String> sports;
-    private List<Courts> courts;
+    private Integer courts;
 
+    public void setCourts(Integer courts) {
+        this.courts = courts;
+    }
 
     public String getName() {
         return name;
@@ -90,11 +93,11 @@ public class PlayAreaRequest {
         this.zipcode = zipcode;
     }
 
-    public List<Integer> getTimings() {
+    public String getTimings() {
         return timings;
     }
 
-    public void setTimings(List<Integer> timings) {
+    public void setTimings(String timings) {
         this.timings = timings;
     }
 
@@ -106,11 +109,9 @@ public class PlayAreaRequest {
         this.sports = sports;
     }
 
-    public List<Courts> getCourts() {
+    public Integer getCourts() {
         return courts;
     }
 
-    public void setCourts(List<Courts> courts) {
-        this.courts = courts;
-    }
+
 }

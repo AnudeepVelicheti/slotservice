@@ -12,7 +12,15 @@ import javax.persistence.Entity;
 public class PlayAreaSport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
     private Integer id;
+
+    @Column(name = "play_area_id")
+    private Integer playAreaId;
+
+    @Column(name = "sport_id")
+    private Integer sportId;
+
 
     public Integer getId() {
         return id;
@@ -38,11 +46,6 @@ public class PlayAreaSport {
         this.sportId = sportId;
     }
 
-    @Column(name = "play_area_id")
-    private Integer playAreaId;
-
-    @Column(name = "sport_id")
-    private Integer sportId;
 
     // Getters and setters
 }

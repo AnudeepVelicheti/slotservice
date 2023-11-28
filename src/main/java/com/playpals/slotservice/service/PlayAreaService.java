@@ -15,4 +15,6 @@ public interface PlayAreaService {
     public void updatePlayArea(Integer playAreaId, PlayAreaRequest playAreaRequest,MultipartFile[] files) throws Exception;
 
     public void deletePlayArea(Integer playAreaId);
+
+    List<PlayArea> getPlayAreasByStatus(String requested);
 }

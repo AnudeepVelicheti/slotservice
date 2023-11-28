@@ -397,6 +397,10 @@ public class PlayAreaServiceImpl implements PlayAreaService {
         }
     }
 
+    public List<PlayArea> getPlayAreasByStatus(String status) {
+        return playAreaRepository.findByStatus(status);
+    }
+
 
 }
 

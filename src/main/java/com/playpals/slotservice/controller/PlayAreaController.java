@@ -34,6 +34,7 @@ public class PlayAreaController {
     @Autowired
     private DetailsServiceImpl detailsService;
 
+
     @PostMapping(path = "/api/createPlayArea", consumes = {"multipart/form-data"})
     public ResponseEntity<ApiResponse> createPlayArea(HttpServletRequest request, @RequestParam String playAreaRequest, @RequestParam("files") MultipartFile[] files) throws IOException
 {
@@ -138,6 +139,19 @@ public class PlayAreaController {
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("/api/requestedPlayArea")
+    public ResponseEntity<List<PlayArea>> getRequestedPlayAreas() {
+        List<PlayArea> requestedPlayAreas = playAreaService.getPlayAreasByStatus("Requested");
+        return new ResponseEntity<>(requestedPlayAreas, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/acceptedPlayArea")
+    public ResponseEntity<List<PlayArea>> getAcceptedPlayAreas() {
+        List<PlayArea> acceptedPlayAreas = playAreaService.getPlayAreasByStatus("Accepted");
+        return new ResponseEntity<>(acceptedPlayAreas, HttpStatus.OK);
+    }
+
 
 
 

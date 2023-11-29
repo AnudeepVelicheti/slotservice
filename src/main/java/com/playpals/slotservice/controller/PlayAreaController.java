@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playpals.slotservice.model.Details;
 import com.playpals.slotservice.model.PlayArea;
 import com.playpals.slotservice.pojo.ApiResponse;
+import com.playpals.slotservice.pojo.PlayAreaPojo;
 import com.playpals.slotservice.pojo.PlayAreaRequest;
+import com.playpals.slotservice.repository.PlayAreaDocRepository;
+import com.playpals.slotservice.repository.PlayAreaRepository;
 import com.playpals.slotservice.service.DetailsServiceImpl;
 import com.playpals.slotservice.service.PlayAreaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +16,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.playpals.slotservice.model.PlayAreaDoc;
+import com.playpals.slotservice.model.PlayAreaDoc;
+
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -33,6 +40,12 @@ public class PlayAreaController {
 
     @Autowired
     private DetailsServiceImpl detailsService;
+
+    @Autowired
+    private PlayAreaDocRepository playAreaDocRepository;
+
+    @Autowired
+    private PlayAreaRepository playAreaRepository;
 
 
     @PostMapping(path = "/api/createPlayArea", consumes = {"multipart/form-data"})
@@ -140,16 +153,95 @@ public class PlayAreaController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/api/requestedPlayArea")
-    public ResponseEntity<List<PlayArea>> getRequestedPlayAreas() {
-        List<PlayArea> requestedPlayAreas = playAreaService.getPlayAreasByStatus("Requested");
-        return new ResponseEntity<>(requestedPlayAreas, HttpStatus.OK);
+    @GetMapping("/api/getNonRequestedPlayAreas")
+    public List<PlayAreaPojo> getNonRequestedPlayAreasWithDocs() {
+        List<PlayArea> nonRequestedPlayAreas = playAreaRepository.findAll()
+                .stream()
+                .filter(playArea -> !playArea.getStatus().equals("Requested"))
+                .collect(Collectors.toList());
+
+        return nonRequestedPlayAreas.stream()
+                .map(playArea -> {
+                    List<String> docUrls = playAreaDocRepository.findByPlayAreaId(playArea.getId())
+                            .stream()
+                            .map(PlayAreaDoc::getS3Url)
+                            .collect(Collectors.toList());
+                    PlayAreaPojo playAreaPojo = new PlayAreaPojo();
+                    playAreaPojo.setId(playArea.getId());
+                    playAreaPojo.setDocUrls(docUrls);
+                    playAreaPojo.setCity(playArea.getCity());
+                    playAreaPojo.setAddress1(playArea.getAddress1());
+                    playAreaPojo.setAddress2(playArea.getAddress2());
+                    playAreaPojo.setCountry(playArea.getCountry());
+                    playAreaPojo.setComments(playArea.getComments());
+                    playAreaPojo.setName(playArea.getName());
+                    playAreaPojo.setOwner(playArea.getOwner());
+                    playAreaPojo.setStatus(playArea.getStatus());
+                    playAreaPojo.setZipcode(playArea.getZipcode());// Set other fields as needed
+
+
+
+                    return playAreaPojo;
+                })
+                .collect(Collectors.toList());
     }
 
-    @GetMapping("/api/acceptedPlayArea")
-    public ResponseEntity<List<PlayArea>> getAcceptedPlayAreas() {
-        List<PlayArea> acceptedPlayAreas = playAreaService.getPlayAreasByStatus("Accepted");
-        return new ResponseEntity<>(acceptedPlayAreas, HttpStatus.OK);
+
+    @GetMapping("/api/requestedPlayArea")
+    public List<PlayAreaPojo> getRequestedPlayAreas() {
+        List<PlayArea> playAreas = playAreaService.getPlayAreasByStatus("Requested");
+        return playAreas.stream()
+                .map(playArea -> {
+                    List<String> docUrls = playAreaDocRepository.findByPlayAreaId(playArea.getId())
+                            .stream()
+                            .map(PlayAreaDoc::getS3Url)
+                            .collect(Collectors.toList());
+
+                    PlayAreaPojo playAreaPojo = new PlayAreaPojo();
+                    playAreaPojo.setId(playArea.getId());
+                    playAreaPojo.setDocUrls(docUrls);
+                    playAreaPojo.setCity(playArea.getCity());
+                    playAreaPojo.setAddress1(playArea.getAddress1());
+                    playAreaPojo.setAddress2(playArea.getAddress2());
+                    playAreaPojo.setCountry(playArea.getCountry());
+                    playAreaPojo.setComments(playArea.getComments());
+                    playAreaPojo.setName(playArea.getName());
+                    playAreaPojo.setOwner(playArea.getOwner());
+                    playAreaPojo.setStatus(playArea.getStatus());
+                    playAreaPojo.setZipcode(playArea.getZipcode());// Set other fields as needed
+
+                    return playAreaPojo;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/api/getPlayAreas")
+    public List<PlayAreaPojo> getAllPlayAreasWithDocs() {
+        List<PlayArea> playAreas = playAreaRepository.findAll();
+
+        return playAreas.stream()
+                .map(playArea -> {
+                    List<String> docUrls = playAreaDocRepository.findByPlayAreaId(playArea.getId())
+                            .stream()
+                            .map(PlayAreaDoc::getS3Url)
+                            .collect(Collectors.toList());
+
+                    PlayAreaPojo playAreaPojo = new PlayAreaPojo();
+                    playAreaPojo.setId(playArea.getId());
+                    playAreaPojo.setDocUrls(docUrls);
+                    playAreaPojo.setCity(playArea.getCity());
+                    playAreaPojo.setAddress1(playArea.getAddress1());
+                    playAreaPojo.setAddress2(playArea.getAddress2());
+                    playAreaPojo.setCountry(playArea.getCountry());
+                    playAreaPojo.setComments(playArea.getComments());
+                    playAreaPojo.setName(playArea.getName());
+                    playAreaPojo.setOwner(playArea.getOwner());
+                    playAreaPojo.setStatus(playArea.getStatus());
+                    playAreaPojo.setZipcode(playArea.getZipcode());// Set other fields as needed
+
+                    return playAreaPojo;
+                })
+                .collect(Collectors.toList());
     }
 
 

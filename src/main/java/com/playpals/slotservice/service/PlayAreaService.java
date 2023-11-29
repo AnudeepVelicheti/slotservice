@@ -17,4 +17,6 @@ public interface PlayAreaService {
     public void deletePlayArea(Integer playAreaId);
 
     List<PlayArea> getPlayAreasByStatus(String requested);
+
+    List<PlayArea> getAllPlayAreas();
 }

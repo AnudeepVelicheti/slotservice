@@ -1,0 +1,19 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - aws --version
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 617889394379.dkr.ecr.ap-south-1.amazonaws.com
+      - REPOSITORY_URI=617889394379.dkr.ecr.ap-south-1.amazonaws.com/testrepository
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - BUILD_TAG=${COMMIT_HASH:=$IMAGE_TAG}
+  build:
+    commands:
+      - docker build -t $REPOSITORY_URI:$BUILD_TAG -f Dockerfile .
+      - docker tag $REPOSITORY_URI:$BUILD_TAG $REPOSITORY_URI:$IMAGE_TAG
+  post_build:
+    commands:
+      - docker push $REPOSITORY_URI:$BUILD_TAG
+      - echo '[{"name":"'$IMAGE_CONTAINER_NAME'","imageUri":"'$REPOSITORY_URI':'$BUILD_TAG'"}]' > imagedefinitions.json
+artifacts:
+  files: imagedefinitions.json

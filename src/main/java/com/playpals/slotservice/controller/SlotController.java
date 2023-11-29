@@ -3,6 +3,7 @@ package com.playpals.slotservice.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.playpals.slotservice.model.PlayArea;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,4 +45,6 @@ public class SlotController {
 		response=courtService.getCourtsByPlayArea(playAreaId,sportId);
 		return new ResponseEntity<List<Courts>>(response,HttpStatus.OK);
 	}
+
+
 }

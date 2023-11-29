@@ -401,6 +401,11 @@ public class PlayAreaServiceImpl implements PlayAreaService {
         return playAreaRepository.findByStatus(status);
     }
 
+    public List<PlayArea> getAllPlayAreas() {
+        return playAreaRepository.findAll();
+    }
+
+
 
 }
 

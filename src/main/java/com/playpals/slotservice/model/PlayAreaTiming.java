@@ -11,7 +11,7 @@ import lombok.Data;
 @Entity
 @Table(name="play_area_timings")
 public class PlayAreaTiming {
-	
+
 	@Id
 	@Column(name = "id")
 	private int id;
@@ -27,5 +27,44 @@ public class PlayAreaTiming {
 	
 	@Column(name = "end_time")
 	private int endTime;
-	
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getPlayAreaId() {
+		return playAreaId;
+	}
+
+	public void setPlayAreaId(int playAreaId) {
+		this.playAreaId = playAreaId;
+	}
+
+	public String getDay() {
+		return day;
+	}
+
+	public void setDay(String day) {
+		this.day = day;
+	}
+
+	public int getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(int startTime) {
+		this.startTime = startTime;
+	}
+
+	public int getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(int endTime) {
+		this.endTime = endTime;
+	}
 }

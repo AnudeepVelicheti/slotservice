@@ -1,9 +1,10 @@
 version: 0.0
 os: linux
 
+
 files:
   - source: /
-    destination: /home/ec2-user/uatserver
+    destination: /home/ec2-user/app
 
 permissions:
   - object: /
@@ -12,19 +13,6 @@ permissions:
     group: ec2-user
 
 hooks:
-  BeforeInstall:
-    - location: server_clear.sh
-      timeout: 300
-      runas: ec2-user
   AfterInstall:
-    - location: fix_privileges.sh
+    - location: deploy.sh
       timeout: 300
-      runas: ec2-user
-  ApplicationStart:
-    - location: server_start.sh
-      timeout: 20
-      runas: ec2-user
-  ApplicationStop:
-    - location: server_stop.sh
-      timeout: 20
-      runas: ec2-user

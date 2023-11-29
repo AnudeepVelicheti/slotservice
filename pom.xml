@@ -14,7 +14,8 @@
 	<name>slotservice</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<lombok-version>1.18.12</lombok-version>
+		<java.version>11</java.version>
+		<lombok-version>1.18.22</lombok-version>
 		<spring-cloud.version>2021.0.7</spring-cloud.version>
 	</properties>
 	<dependencies>
@@ -126,22 +127,15 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-							<version>1.18.22</version>
-						</exclude>
-					</excludes>
-				</configuration>
+				 <version>${project.parent.version}</version>
+				
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>11</source>
+					<target>11</target>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>

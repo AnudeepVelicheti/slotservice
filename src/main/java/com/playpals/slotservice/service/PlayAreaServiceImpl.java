@@ -58,6 +58,12 @@ public class PlayAreaServiceImpl implements PlayAreaService {
     
     @Value("${spring.aws.cloudfront}")
     private String cloudfront;
+    
+    @Value("${spring.aws.credentials.accessKey}")
+    private String accessKey;
+    
+    @Value("${spring.aws.credentials.secretKey}")
+    private String secretKey;
 
     @Autowired
     private UserRepository userRepository;
@@ -86,7 +92,7 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
 // Set the JSON string in the playArea
         playArea.setRequest(jsonRequest);
-
+        
         playArea.setStatus("Requested");
 
         playArea = playAreaRepository.save(playArea);
@@ -94,6 +100,7 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
         for (MultipartFile file : files) {
             // Process and save each file
+        	
             if (file != null && !file.isEmpty()) {
                 String fileUrl = uploadFileToS3(file);
                 PlayAreaDoc playAreaDoc = new PlayAreaDoc();
@@ -151,7 +158,6 @@ public class PlayAreaServiceImpl implements PlayAreaService {
             int numberOfCourts = playAreaRequest.getCourts();
             courtsRepository.deleteByPlayAreaId(newPlayAreaId);
             playAreaSportRepository.deleteByPlayAreaId(newPlayAreaId);
-
             if (!sports.isEmpty()) {
                 for (String sportName : sports) {  // Rename the variable to avoid conflicts
                     PlayAreaSport playAreaSport = new PlayAreaSport();
@@ -330,8 +336,8 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
         // AWS Credentials (You should not hardcode these in production code)
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(
-                "AKIARTB6N2O4COMCBJBC",
-                "5u6dwHZutjLv3owcNd2N5YYkfvsikCQiBqkLoiQd"
+                accessKey,
+                secretKey
         );
 
         // Create S3 client
@@ -353,7 +359,7 @@ public class PlayAreaServiceImpl implements PlayAreaService {
         s3.close();
 
         // Return the file URL (Assuming public access or you can generate a pre-signed URL)
-        return "https://" + cloudfront + ".s3." + Region.US_EAST_2 + ".amazonaws.com/" + key;
+        return "https://" + cloudfront  + key;
     }
 
 

@@ -1,0 +1,19 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - aws --version
+      - aws ecr get-login-password --region ap-east-2 | docker login --username AWS --password-stdin public.ecr.aws/r2n9m4w8/playpalrepo
+      - REPOSITORY_URI=public.ecr.aws/r2n9m4w8/playpalrepo
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - BUILD_TAG=${COMMIT_HASH:=$IMAGE_TAG}
+  build:
+    commands:
+      - docker build -t $REPOSITORY_URI:$BUILD_TAG -f Dockerfile .
+      - docker tag $REPOSITORY_URI:$BUILD_TAG $REPOSITORY_URI:latest
+  post_build:
+    commands:
+      - docker push $REPOSITORY_URI:$BUILD_TAG
+      - echo '[{"name":"'$IMAGE_CONTAINER_NAME'","imageUri":"'$REPOSITORY_URI':'$BUILD_TAG'"}]' > imagedefinitions.json
+artifacts:
+  files: imagedefinitions.json

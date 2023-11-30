@@ -12,4 +12,5 @@ public interface PlayAreaRepository extends JpaRepository<PlayArea,Integer> {
     List<PlayArea> findByStatus(String status);
 
 
+    List<PlayArea> findByName(String name);
 }

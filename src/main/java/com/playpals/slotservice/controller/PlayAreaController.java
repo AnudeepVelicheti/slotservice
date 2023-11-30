@@ -48,6 +48,8 @@ public class PlayAreaController {
     private PlayAreaRepository playAreaRepository;
 
 
+
+
     @PostMapping(path = "/api/createPlayArea", consumes = {"multipart/form-data"})
     public ResponseEntity<ApiResponse> createPlayArea(HttpServletRequest request, @RequestParam String playAreaRequest, @RequestParam("files") MultipartFile[] files) throws IOException
 {
@@ -215,33 +217,41 @@ public class PlayAreaController {
                 .collect(Collectors.toList());
     }
 
+
     @GetMapping("/api/getPlayAreas")
-    public List<PlayAreaPojo> getAllPlayAreasWithDocs() {
-        List<PlayArea> playAreas = playAreaRepository.findAll();
+    public List<PlayAreaPojo> getPlayAreas(@RequestParam(value = "userName", required = false) String userName) {
+        List<PlayArea> playAreas;
+
+        if (userName != null && !userName.isEmpty()) {
+            playAreas = playAreaService.findByUserName(userName);
+        } else {
+            playAreas = playAreaService.findAll();
+        }
 
         return playAreas.stream()
-                .map(playArea -> {
-                    List<String> docUrls = playAreaDocRepository.findByPlayAreaId(playArea.getId())
-                            .stream()
-                            .map(PlayAreaDoc::getS3Url)
-                            .collect(Collectors.toList());
-
-                    PlayAreaPojo playAreaPojo = new PlayAreaPojo();
-                    playAreaPojo.setId(playArea.getId());
-                    playAreaPojo.setDocUrls(docUrls);
-                    playAreaPojo.setCity(playArea.getCity());
-                    playAreaPojo.setAddress1(playArea.getAddress1());
-                    playAreaPojo.setAddress2(playArea.getAddress2());
-                    playAreaPojo.setCountry(playArea.getCountry());
-                    playAreaPojo.setComments(playArea.getComments());
-                    playAreaPojo.setName(playArea.getName());
-                    playAreaPojo.setOwner(playArea.getOwner());
-                    playAreaPojo.setStatus(playArea.getStatus());
-                    playAreaPojo.setZipcode(playArea.getZipcode());// Set other fields as needed
-
-                    return playAreaPojo;
-                })
+                .map(this::convertToPlayAreaPojo)
                 .collect(Collectors.toList());
+    }
+    private PlayAreaPojo convertToPlayAreaPojo(PlayArea playArea) {
+        List<String> docUrls = playAreaDocRepository.findByPlayAreaId(playArea.getId())
+                .stream()
+                .map(PlayAreaDoc::getS3Url)
+                .collect(Collectors.toList());
+
+        PlayAreaPojo playAreaPojo = new PlayAreaPojo();
+        playAreaPojo.setId(playArea.getId());
+        playAreaPojo.setDocUrls(docUrls);
+        playAreaPojo.setCity(playArea.getCity());
+        playAreaPojo.setAddress1(playArea.getAddress1());
+        playAreaPojo.setAddress2(playArea.getAddress2());
+        playAreaPojo.setCountry(playArea.getCountry());
+        playAreaPojo.setComments(playArea.getComments());
+        playAreaPojo.setName(playArea.getName());
+        playAreaPojo.setOwner(playArea.getOwner());
+        playAreaPojo.setStatus(playArea.getStatus());
+        playAreaPojo.setZipcode(playArea.getZipcode());// Set other fields as needed
+
+        return playAreaPojo;
     }
 
 

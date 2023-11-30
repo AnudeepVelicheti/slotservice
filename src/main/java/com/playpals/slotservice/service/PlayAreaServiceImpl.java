@@ -8,6 +8,7 @@ import com.playpals.slotservice.pojo.PlayAreaRequest;
 import com.playpals.slotservice.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,6 +54,9 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
     @Autowired
     private SportsRepository sportsRepository;
+    
+    @Value("${spring.aws.cloudfront}")
+    private String cloudfront;
 
     // Add any other required repositories
 
@@ -330,7 +334,7 @@ public class PlayAreaServiceImpl implements PlayAreaService {
         s3.close();
 
         // Return the file URL (Assuming public access or you can generate a pre-signed URL)
-        return "https://" + bucketName + ".s3." + Region.US_EAST_2 + ".amazonaws.com/" + key;
+        return "https://" + cloudfront + ".s3." + Region.US_EAST_2 + ".amazonaws.com/" + key;
     }
 
 

@@ -13,4 +13,7 @@ public interface PlayAreaRepository extends JpaRepository<PlayArea,Integer> {
 
 
     List<PlayArea> findByName(String name);
+
+    List<PlayArea> findByOwner(Integer ownerId);
+
 }

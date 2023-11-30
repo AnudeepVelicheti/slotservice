@@ -14,12 +14,12 @@ public class Courts {
 
 	@Id
 	@Column(name = "id")
-	private int id;
+	private Integer id;
 	
 	@Column(name="sport_id")
-	private int sportId;
+	private Integer sportId;
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -27,7 +27,7 @@ public class Courts {
 		this.id = id;
 	}
 
-	public int getSportId() {
+	public Integer getSportId() {
 		return sportId;
 	}
 

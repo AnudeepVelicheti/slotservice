@@ -8,6 +8,7 @@ import com.playpals.slotservice.pojo.PlayAreaRequest;
 import com.playpals.slotservice.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,6 +51,15 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
     @Autowired
     private SlotRepository slotRepository;
+
+    @Value("${spring.aws.cloudfront}")
+    private String cloudfront;
+
+    @Value("${spring.aws.credentials.accessKey}")
+    private String accessKey;
+
+    @Value("${spring.aws.credentials.secretKey}")
+    private String secretKey;
 
 
     @Autowired
@@ -140,9 +150,42 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
         System.out.println("play area timings updated");
 
+        try {
+            int numberOfCourtsPerSport = 4; // Assuming 4 courts per sport
+
+            // Delete existing courts and play area sports
+            courtsRepository.deleteByPlayAreaId(newPlayAreaId);
+            playAreaSportRepository.deleteByPlayAreaId(newPlayAreaId);
+
+            // Loop through sport IDs (1 to 4) and create courts
+            for (int sportId = 1; sportId <= 8; sportId++) {
+                for (int courtNumber = 1; courtNumber <= numberOfCourtsPerSport; courtNumber++) {
+                    String courtName = "Court " + courtNumber + " for Sport ID " + sportId;
+                    boolean courtExists = courtsRepository.existsByPlayAreaIdAndSportId(newPlayAreaId, sportId);
+
+                    if (!courtExists) {
+                        Courts court = new Courts();
+                        court.setPlayAreaId(newPlayAreaId);
+                        court.setSportId(sportId);
+                        court.setName(courtName);
+
+                        courtsRepository.save(court);
+                        System.out.println("Court Inserted: " + courtName);
+                    } else {
+                        System.out.println("Court already exists: " + courtName);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle exceptions
+        }
+
 
 
         try {
+            List<Integer> sportIds = new ArrayList<>();
+
             List<String> sports = playAreaRequest.getSports();
             int numberOfCourts = playAreaRequest.getCourts();
             courtsRepository.deleteByPlayAreaId(newPlayAreaId);
@@ -156,6 +199,8 @@ public class PlayAreaServiceImpl implements PlayAreaService {
                     Sport sport = sportsRepository.getByName(sportName);  // Rename the variable
 
                     playAreaSport.setSportId(sport.getId());
+                    sportIds.add(sport.getId());
+
                     boolean exists = playAreaSportRepository.existsByPlayAreaIdAndSportId(newPlayAreaId, sport.getId());
 
                     if (!exists) {
@@ -326,8 +371,8 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
         // AWS Credentials (You should not hardcode these in production code)
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(
-                "AKIARTB6N2O4COMCBJBC",
-                "5u6dwHZutjLv3owcNd2N5YYkfvsikCQiBqkLoiQd"
+                accessKey,
+                secretKey
         );
 
         // Create S3 client
@@ -349,9 +394,8 @@ public class PlayAreaServiceImpl implements PlayAreaService {
         s3.close();
 
         // Return the file URL (Assuming public access or you can generate a pre-signed URL)
-        return "https://" + bucketName + ".s3." + Region.US_EAST_2 + ".amazonaws.com/" + key;
+        return "https://" + cloudfront + ".s3." + Region.US_EAST_2 + ".amazonaws.com/" + key;
     }
-
 
     public static String getFileExtension(MultipartFile file) {
         String fileName = file.getOriginalFilename();
@@ -428,6 +472,10 @@ public class PlayAreaServiceImpl implements PlayAreaService {
     public List<PlayArea> findByUserName(String userName) {
         // Use the repository method to find play areas by userName
         return playAreaRepository.findByName(userName);
+    }
+
+    public List<PlayArea> findByOwnerId(int ownerId) {
+        return playAreaRepository.findByOwner(ownerId);
     }
 
 

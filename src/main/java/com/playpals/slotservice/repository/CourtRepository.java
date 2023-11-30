@@ -22,4 +22,6 @@ Optional<List<Courts>> findCourtsByTime(int playAreaId, int sportId);
     void deleteByPlayAreaId(Integer newPlayAreaId);
 
     boolean existsByPlayAreaIdAndSportIdAndName(Integer newPlayAreaId, int id, String courtName);
+
+    boolean existsByPlayAreaIdAndSportId(Integer newPlayAreaId, int sportId);
 }

@@ -9,6 +9,7 @@ import com.playpals.slotservice.pojo.PlayAreaPojo;
 import com.playpals.slotservice.pojo.PlayAreaRequest;
 import com.playpals.slotservice.repository.PlayAreaDocRepository;
 import com.playpals.slotservice.repository.PlayAreaRepository;
+import com.playpals.slotservice.repository.UserRepository;
 import com.playpals.slotservice.service.DetailsServiceImpl;
 import com.playpals.slotservice.service.PlayAreaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.playpals.slotservice.model.PlayAreaDoc;
-import com.playpals.slotservice.model.PlayAreaDoc;
+import com.playpals.slotservice.model.User;
 
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,6 +48,9 @@ public class PlayAreaController {
 
     @Autowired
     private PlayAreaRepository playAreaRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
 
@@ -218,12 +223,35 @@ public class PlayAreaController {
     }
 
 
+//    @GetMapping("/api/getPlayAreas")
+//    public List<PlayAreaPojo> getPlayAreas(@RequestParam(value = "userName", required = false) String userName) {
+//        List<PlayArea> playAreas;
+//
+//        if (userName != null && !userName.isEmpty()) {
+//            playAreas = playAreaService.findByUserName(userName);
+//        } else {
+//            playAreas = playAreaService.findAll();
+//        }
+//
+//        return playAreas.stream()
+//                .map(this::convertToPlayAreaPojo)
+//                .collect(Collectors.toList());
+//    }
+
+
     @GetMapping("/api/getPlayAreas")
     public List<PlayAreaPojo> getPlayAreas(@RequestParam(value = "userName", required = false) String userName) {
         List<PlayArea> playAreas;
 
         if (userName != null && !userName.isEmpty()) {
-            playAreas = playAreaService.findByUserName(userName);
+            // Assuming you have a method in your UserService to find a user by username
+            User user = userRepository.findByUsername(userName);
+            if (user!=null) {
+                playAreas = playAreaService.findByOwnerId(user.getId());
+            } else {
+                // Handle the case where the user is not found
+                playAreas = new ArrayList<>();
+            }
         } else {
             playAreas = playAreaService.findAll();
         }
@@ -232,6 +260,7 @@ public class PlayAreaController {
                 .map(this::convertToPlayAreaPojo)
                 .collect(Collectors.toList());
     }
+
     private PlayAreaPojo convertToPlayAreaPojo(PlayArea playArea) {
         List<String> docUrls = playAreaDocRepository.findByPlayAreaId(playArea.getId())
                 .stream()

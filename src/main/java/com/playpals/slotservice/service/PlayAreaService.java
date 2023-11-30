@@ -23,4 +23,6 @@ public interface PlayAreaService {
     List<PlayArea> findByUserName(String userName);
 
     List<PlayArea> findAll();
+
+    List<PlayArea> findByOwnerId(int id);
 }

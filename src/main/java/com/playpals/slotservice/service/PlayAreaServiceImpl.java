@@ -53,6 +53,7 @@ public class PlayAreaServiceImpl implements PlayAreaService {
     private SlotRepository slotRepository;
 
 
+
     @Autowired
     private SportsRepository sportsRepository;
     
@@ -151,9 +152,42 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
         System.out.println("play area timings updated");
 
+        try {
+            int numberOfCourtsPerSport = 4; // Assuming 4 courts per sport
+
+            // Delete existing courts and play area sports
+            courtsRepository.deleteByPlayAreaId(newPlayAreaId);
+            playAreaSportRepository.deleteByPlayAreaId(newPlayAreaId);
+
+            // Loop through sport IDs (1 to 4) and create courts
+            for (int sportId = 1; sportId <= 8; sportId++) {
+                for (int courtNumber = 1; courtNumber <= numberOfCourtsPerSport; courtNumber++) {
+                    String courtName = "Court " + courtNumber + " for Sport ID " + sportId;
+                    boolean courtExists = courtsRepository.existsByPlayAreaIdAndSportId(newPlayAreaId, sportId);
+
+                    if (!courtExists) {
+                        Courts court = new Courts();
+                        court.setPlayAreaId(newPlayAreaId);
+                        court.setSportId(sportId);
+                        court.setName(courtName);
+
+                        courtsRepository.save(court);
+                        System.out.println("Court Inserted: " + courtName);
+                    } else {
+                        System.out.println("Court already exists: " + courtName);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle exceptions
+        }
+
 
 
         try {
+            List<Integer> sportIds = new ArrayList<>();
+
             List<String> sports = playAreaRequest.getSports();
             int numberOfCourts = playAreaRequest.getCourts();
             courtsRepository.deleteByPlayAreaId(newPlayAreaId);
@@ -166,6 +200,8 @@ public class PlayAreaServiceImpl implements PlayAreaService {
                     Sport sport = sportsRepository.getByName(sportName);  // Rename the variable
 
                     playAreaSport.setSportId(sport.getId());
+                    sportIds.add(sport.getId());
+
                     boolean exists = playAreaSportRepository.existsByPlayAreaIdAndSportId(newPlayAreaId, sport.getId());
 
                     if (!exists) {
@@ -362,7 +398,6 @@ public class PlayAreaServiceImpl implements PlayAreaService {
         return "https://" + cloudfront  + key;
     }
 
-
     public static String getFileExtension(MultipartFile file) {
         String fileName = file.getOriginalFilename();
 
@@ -438,6 +473,10 @@ public class PlayAreaServiceImpl implements PlayAreaService {
     public List<PlayArea> findByUserName(String userName) {
         // Use the repository method to find play areas by userName
         return playAreaRepository.findByName(userName);
+    }
+
+    public List<PlayArea> findByOwnerId(int ownerId) {
+        return playAreaRepository.findByOwner(ownerId);
     }
 
 

@@ -18,5 +18,9 @@ public interface PlayAreaService {
 
     List<PlayArea> getPlayAreasByStatus(String requested);
 
-    List<PlayArea> getAllPlayAreas();
+
+
+    List<PlayArea> findByUserName(String userName);
+
+    List<PlayArea> findAll();
 }

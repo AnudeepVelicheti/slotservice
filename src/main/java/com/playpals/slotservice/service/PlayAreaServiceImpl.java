@@ -424,10 +424,15 @@ public class PlayAreaServiceImpl implements PlayAreaService {
         return playAreaRepository.findByStatus(status);
     }
 
-    public List<PlayArea> getAllPlayAreas() {
+    public List<PlayArea> findAll() {
         return playAreaRepository.findAll();
     }
 
+
+    public List<PlayArea> findByUserName(String userName) {
+        // Use the repository method to find play areas by userName
+        return playAreaRepository.findByName(userName);
+    }
 
 
 }

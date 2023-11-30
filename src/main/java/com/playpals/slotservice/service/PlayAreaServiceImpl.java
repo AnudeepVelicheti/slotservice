@@ -58,6 +58,9 @@ public class PlayAreaServiceImpl implements PlayAreaService {
     @Value("${spring.aws.cloudfront}")
     private String cloudfront;
 
+    @Autowired
+    private UserRepository userRepository;
+
     // Add any other required repositories
 
     public void createPlayArea(PlayAreaRequest playAreaRequest,MultipartFile[] files) throws Exception {
@@ -66,7 +69,12 @@ public class PlayAreaServiceImpl implements PlayAreaService {
         // Set properties from PlayAreaRequest to PlayArea entity
         playArea.setName(playAreaRequest.getName());
         playArea.setCity(playAreaRequest.getCity());
-        playArea.setOwner(playAreaRequest.getOwner());
+        User ownerUser = userRepository.findByUsername(playAreaRequest.getOwner());
+        if (ownerUser == null) {
+            throw new Exception("Owner not found in users table");
+        }
+        Integer ownerId = ownerUser.getId();
+        playArea.setOwner(ownerId);
         playArea.setAddress1(playAreaRequest.getAddress1());
         playArea.setAddress2(playAreaRequest.getAddress2());
         playArea.setState(playAreaRequest.getState());
@@ -197,7 +205,12 @@ public class PlayAreaServiceImpl implements PlayAreaService {
             // Step 2: Update the PlayArea entity with new values
             playArea.setName(playAreaRequest.getName());
             playArea.setCity(playAreaRequest.getCity());
-            playArea.setOwner(playAreaRequest.getOwner());
+            User ownerUser = userRepository.findByUsername(playAreaRequest.getOwner());
+            if (ownerUser == null) {
+                throw new Exception("Owner not found in users table");
+            }
+            Integer ownerId = ownerUser.getId();
+            playArea.setOwner(ownerId);
             playArea.setAddress1(playAreaRequest.getAddress1());
             playArea.setAddress2(playAreaRequest.getAddress2());
             playArea.setState(playAreaRequest.getState());

@@ -13,7 +13,7 @@ import java.util.List;
 public class PlayAreaRequest {
 
     private String name;
-    private Integer owner;
+    private String owner;
     private String address1;
     private String address2;
     private String city;
@@ -37,11 +37,11 @@ public class PlayAreaRequest {
         this.name = name;
     }
 
-    public Integer getOwner() {
+    public String getOwner() {
         return owner;
     }
 
-    public void setOwner(Integer owner) {
+    public void setOwner(String owner) {
         this.owner = owner;
     }
 

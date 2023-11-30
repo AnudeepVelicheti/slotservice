@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -111,29 +112,35 @@ public class PlayAreaServiceImpl implements PlayAreaService {
             System.out.println("play area doc inserted");
 
         }
-        String timingString = playAreaRequest.getTimings();
-        String[] timingParts = timingString.split(" ");
 
-// Assuming a valid format like "Monday 10:00 to 12:00"
-        String day = timingParts[0];
-//            String[] timeRange = timingParts[2].split(" to ");
-        int startTime = Integer.parseInt(timingParts[1].split(":")[0]);
-        int endTime = Integer.parseInt(timingParts[3].split(":")[0]);
+        int startTime = playAreaRequest.getStartTime();
+        int endTime = playAreaRequest.getEndTime();
 
 
 
 
 
-        // Check if a record with the given playAreaId already exists
-        List<PlayAreaTiming> existingTimings = playAreaTimingRepository.findByPlayAreaIdAndDay(newPlayAreaId, day);
 
-        playAreaTimingRepository.deleteAll(existingTimings);
-        PlayAreaTiming newPlayAreaTiming = new PlayAreaTiming();
-        newPlayAreaTiming.setPlayAreaId(newPlayAreaId);
-        newPlayAreaTiming.setDay(day);
-        newPlayAreaTiming.setStartTime(startTime);
-        newPlayAreaTiming.setEndTime(endTime);
-        playAreaTimingRepository.save(newPlayAreaTiming);
+        String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+
+        playAreaTimingRepository.deleteByPlayAreaId(newPlayAreaId);
+
+        List<PlayAreaTiming> newTimings = new ArrayList<>();
+
+        for (String day : days) {
+            PlayAreaTiming newPlayAreaTiming = new PlayAreaTiming();
+            newPlayAreaTiming.setPlayAreaId(newPlayAreaId);
+            newPlayAreaTiming.setDay(day);
+            newPlayAreaTiming.setStartTime(startTime);
+            newPlayAreaTiming.setEndTime(endTime);
+
+            newTimings.add(newPlayAreaTiming);
+        }
+
+        playAreaTimingRepository.saveAll(newTimings);
+
+
+
 
         System.out.println("play area timings updated");
 
@@ -249,29 +256,28 @@ public class PlayAreaServiceImpl implements PlayAreaService {
                 System.out.println("play area doc inserted");
 
             }
+            int startTime = playAreaRequest.getStartTime();
+            int endTime = playAreaRequest.getEndTime();
 
-            String timingString = playAreaRequest.getTimings();
-            String[] timingParts = timingString.split(" ");
+            String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
-// Assuming a valid format like "Monday 10:00 to 12:00"
-           String day = timingParts[0];
-//            String[] timeRange = timingParts[2].split(" to ");
-            int startTime = Integer.parseInt(timingParts[1].split(":")[0]);
-            int endTime = Integer.parseInt(timingParts[3].split(":")[0]);
+            playAreaTimingRepository.deleteByPlayAreaId(playAreaId);
 
-// Check if a record with the given playAreaId and day already exists
-            List<PlayAreaTiming> existingTimings = playAreaTimingRepository.findByPlayAreaIdAndDay(playAreaId, day);
+            List<PlayAreaTiming> newTimings = new ArrayList<>();
 
-// Delete existing entries
-            playAreaTimingRepository.deleteAll(existingTimings);
+            for (String day : days) {
+                PlayAreaTiming newPlayAreaTiming = new PlayAreaTiming();
+                newPlayAreaTiming.setPlayAreaId(playAreaId);
+                newPlayAreaTiming.setDay(day);
+                newPlayAreaTiming.setStartTime(startTime);
+                newPlayAreaTiming.setEndTime(endTime);
 
-// Insert a new entry
-            PlayAreaTiming newPlayAreaTiming = new PlayAreaTiming();
-            newPlayAreaTiming.setPlayAreaId(playAreaId);
-            newPlayAreaTiming.setDay(day);
-            newPlayAreaTiming.setStartTime(startTime);
-            newPlayAreaTiming.setEndTime(endTime);
-            playAreaTimingRepository.save(newPlayAreaTiming);
+                newTimings.add(newPlayAreaTiming);
+            }
+
+            playAreaTimingRepository.saveAll(newTimings);
+
+
 
             System.out.println("play area timings updated");
 

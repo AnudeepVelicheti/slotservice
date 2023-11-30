@@ -21,7 +21,8 @@ public class PlayAreaRequest {
     private String country;
     private Integer zipcode;
 
-    private String timings; // Assume a simple format like "Monday 10:00-12:00"
+    private Integer startTime;
+    private Integer endTime;
     private List<String> sports;
     private Integer courts;
 
@@ -93,13 +94,6 @@ public class PlayAreaRequest {
         this.zipcode = zipcode;
     }
 
-    public String getTimings() {
-        return timings;
-    }
-
-    public void setTimings(String timings) {
-        this.timings = timings;
-    }
 
     public List<String> getSports() {
         return sports;

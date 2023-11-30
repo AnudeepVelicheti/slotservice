@@ -1,9 +1,6 @@
 package com.playpals.slotservice.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Data;
 
@@ -13,6 +10,7 @@ import lombok.Data;
 public class PlayAreaTiming {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // or another strategy as needed
 	@Column(name = "id")
 	private int id;
 	

@@ -19,11 +19,9 @@ if [ "$(docker ps -a -q -f name=$CONTAINER_NAME)" ]; then
     docker rm $CONTAINER_NAME
 fi
 
-# Log in to ECR
-aws ecr get-login-password --region ap-east-2 | docker login --username AWS --password-stdin public.ecr.aws/r2n9m4w8/playpalrepo
 
 # Pull the Docker image
 docker pull $ECR_REPO_URI:latest
 
 # Run the new Docker container with the static name
-docker run -d --name $CONTAINER_NAME -p 80:3000 $ECR_REPO_URI:latest
+docker run -d --name $CONTAINER_NAME -p 8080:8080 $ECR_REPO_URI:latest

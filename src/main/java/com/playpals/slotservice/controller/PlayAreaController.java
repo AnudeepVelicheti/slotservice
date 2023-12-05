@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.playpals.slotservice.model.Details;
 import com.playpals.slotservice.model.PlayArea;
 import com.playpals.slotservice.pojo.ApiResponse;
+import com.playpals.slotservice.pojo.PlayAreaIdRequest;
 import com.playpals.slotservice.pojo.PlayAreaPojo;
 import com.playpals.slotservice.pojo.PlayAreaRequest;
 import com.playpals.slotservice.repository.PlayAreaDocRepository;
@@ -12,6 +13,7 @@ import com.playpals.slotservice.repository.PlayAreaRepository;
 import com.playpals.slotservice.repository.UserRepository;
 import com.playpals.slotservice.service.DetailsServiceImpl;
 import com.playpals.slotservice.service.PlayAreaService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -282,6 +284,38 @@ public class PlayAreaController {
 
         return playAreaPojo;
     }
+
+    @GetMapping("/api/getPlayAreaRequests")
+    public List<PlayAreaIdRequest> getAllPlayAreaRequests(@RequestParam(required = false) String userName) {
+        List<Object[]> idAndJsonRequests = playAreaRepository.findAllIdAndJsonRequests();
+        List<PlayAreaIdRequest> playAreaIdRequests = new ArrayList<>();
+
+        for (Object[] idAndJson : idAndJsonRequests) {
+            try {
+                Integer id = (Integer) idAndJson[0];
+                String json = (String) idAndJson[1];
+                PlayAreaRequest playAreaRequest = objectMapper.readValue(json, PlayAreaRequest.class);
+
+                PlayAreaIdRequest playAreaIdRequest = new PlayAreaIdRequest();
+                playAreaIdRequest.setId(id);
+                // Copy other properties from playAreaRequest to playAreaIdRequest
+                BeanUtils.copyProperties(playAreaRequest, playAreaIdRequest);
+
+                playAreaIdRequests.add(playAreaIdRequest);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace(); // Log and handle this exception appropriately
+            }
+        }
+
+        if (userName != null && !userName.isEmpty()) {
+            return playAreaIdRequests.stream()
+                    .filter(request -> userName.equals(request.getOwner()))
+                    .collect(Collectors.toList());
+        }
+
+        return playAreaIdRequests;
+    }
+
 
 
 

@@ -19,6 +19,8 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -81,7 +83,7 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
     // Add any other required repositories
 
-    public void createPlayArea(PlayAreaRequest playAreaRequest,MultipartFile[] files) throws Exception {
+    public void createPlayArea(PlayAreaRequest playAreaRequest,MultipartFile[] files) throws IOException, Exception {
         // Step 1: Create and save the PlayArea entity
         PlayArea playArea = new PlayArea();
         // Set properties from PlayAreaRequest to PlayArea entity
@@ -109,26 +111,28 @@ public class PlayAreaServiceImpl implements PlayAreaService {
         playArea = playAreaRepository.save(playArea);
         Integer newPlayAreaId = playArea.getId();
 
-        for (MultipartFile file : files) {
-            // Process and save each file
-        	
-            if (file != null && !file.isEmpty()) {
-                String fileUrl = uploadFileToS3(file);
-                PlayAreaDoc playAreaDoc = new PlayAreaDoc();
-                playAreaDoc.setPlayAreaId(newPlayAreaId);
-                System.out.println("fileurl  "+fileUrl);
-                playAreaDoc.setS3Url(fileUrl);
-                playAreaDoc.setName(playArea.getName());
-                playAreaDoc.setType(getFileExtension(file));
-                System.out.println("file type  "+getFileExtension(file));
+        try {
+            for (MultipartFile file : files) {
+                // Process and save each file
+                if (file != null && !file.isEmpty()) {
+                    String fileUrl = uploadFileToS3(file);
+                    PlayAreaDoc playAreaDoc = new PlayAreaDoc();
+                    playAreaDoc.setPlayAreaId(newPlayAreaId);
+                    System.out.println("fileurl  " + fileUrl);
+                    playAreaDoc.setS3Url(fileUrl);
+                    playAreaDoc.setName(playArea.getName());
+                    playAreaDoc.setType(getFileExtension(file));
+                    System.out.println("file type  " + getFileExtension(file));
 
+                    System.out.println("playAreaDoc  " + playAreaDoc);
 
-                System.out.println("playAreaDoc  "+playAreaDoc);
-
-                playAreaDocRepository.save(playAreaDoc);
+                    playAreaDocRepository.save(playAreaDoc);
+                }
+                System.out.println("play area doc inserted");
             }
-            System.out.println("play area doc inserted");
-
+        } catch (Exception e) {
+            // Handle the exception here
+            e.printStackTrace(); // You can replace this with your preferred error handling
         }
 
         int startTime = playAreaRequest.getStartTime();
@@ -163,19 +167,19 @@ public class PlayAreaServiceImpl implements PlayAreaService {
         System.out.println("play area timings updated");
 
         try {
-            int numberOfCourtsPerSport = 4; // Assuming 4 courts per sport
+            int numberOfCourtsPerSport = playAreaRequest.getCourts(); // Assuming 4 courts per sport
 
             // Delete existing courts and play area sports
             courtsRepository.deleteByPlayAreaId(newPlayAreaId);
             playAreaSportRepository.deleteByPlayAreaId(newPlayAreaId);
 
-            // Loop through sport IDs (1 to 4) and create courts
+            // Loop through sport IDs (1 to 8) and create courts
             for (int sportId = 1; sportId <= 8; sportId++) {
-                for (int courtNumber = 1; courtNumber <= numberOfCourtsPerSport; courtNumber++) {
-                    String courtName = "Court " + courtNumber + " for Sport ID " + sportId;
-                    boolean courtExists = courtsRepository.existsByPlayAreaIdAndSportId(newPlayAreaId, sportId);
+                boolean courtExists = courtsRepository.existsByPlayAreaIdAndSportId(newPlayAreaId, sportId);
 
-                    if (!courtExists) {
+                if (!courtExists) {
+                    for (int courtNumber = 1; courtNumber <= numberOfCourtsPerSport; courtNumber++) {
+                        String courtName = "Court " + courtNumber;
                         Courts court = new Courts();
                         court.setPlayAreaId(newPlayAreaId);
                         court.setSportId(sportId);
@@ -183,15 +187,19 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
                         courtsRepository.save(court);
                         System.out.println("Court Inserted: " + courtName);
-                    } else {
-                        System.out.println("Court already exists: " + courtName);
+                        court = null;
                     }
+                } else {
+                    System.out.println("Courts already exist for Sport ID " + sportId);
                 }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exceptions
         }
+
+
 
 
 
@@ -200,8 +208,6 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
             List<String> sports = playAreaRequest.getSports();
             int numberOfCourts = playAreaRequest.getCourts();
-            courtsRepository.deleteByPlayAreaId(newPlayAreaId);
-            playAreaSportRepository.deleteByPlayAreaId(newPlayAreaId);
             if (!sports.isEmpty()) {
                 for (String sportName : sports) {  // Rename the variable to avoid conflicts
                     PlayAreaSport playAreaSport = new PlayAreaSport();
@@ -253,7 +259,7 @@ public class PlayAreaServiceImpl implements PlayAreaService {
     }
 
     // Update PlayArea Service Method
-    public void updatePlayArea(Integer playAreaId, PlayAreaRequest playAreaRequest,MultipartFile[] files) throws Exception {
+    public void updatePlayArea(Integer playAreaId, PlayAreaRequest playAreaRequest,MultipartFile[] files) throws Exception,IOException {
         // Step 1: Retrieve existing PlayArea entity
         Optional<PlayArea> optionalPlayArea = playAreaRepository.findById(playAreaId);
         if (optionalPlayArea.isPresent()) {
@@ -288,25 +294,28 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
 
 
-            for (MultipartFile file : files) {
-                // Process and save each file
-                if (file != null && !file.isEmpty()) {
-                    String fileUrl = uploadFileToS3(file);
-                    PlayAreaDoc playAreaDoc = new PlayAreaDoc();
-                    playAreaDoc.setPlayAreaId(playAreaId);
-                    System.out.println("fileurl  "+fileUrl);
-                    playAreaDoc.setS3Url(fileUrl);
-                    playAreaDoc.setName(playArea.getName());
-                    playAreaDoc.setType(getFileExtension(file));
-                    System.out.println("file type  "+getFileExtension(file));
+            try {
+                for (MultipartFile file : files) {
+                    // Process and save each file
+                    if (file != null && !file.isEmpty()) {
+                        String fileUrl = uploadFileToS3(file);
+                        PlayAreaDoc playAreaDoc = new PlayAreaDoc();
+                        playAreaDoc.setPlayAreaId(playAreaId);
+                        System.out.println("fileurl  " + fileUrl);
+                        playAreaDoc.setS3Url(fileUrl);
+                        playAreaDoc.setName(playArea.getName());
+                        playAreaDoc.setType(getFileExtension(file));
+                        System.out.println("file type  " + getFileExtension(file));
 
+                        System.out.println("playAreaDoc  " + playAreaDoc);
 
-                    System.out.println("playAreaDoc  "+playAreaDoc);
-
-                    playAreaDocRepository.save(playAreaDoc);
+                        playAreaDocRepository.save(playAreaDoc);
+                    }
+                    System.out.println("play area doc inserted");
                 }
-                System.out.println("play area doc inserted");
-
+            } catch (Exception e) {
+                // Handle the exception here
+                e.printStackTrace(); // You can replace this with your preferred error handling
             }
             int startTime = playAreaRequest.getStartTime();
             int endTime = playAreaRequest.getEndTime();
@@ -375,7 +384,7 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
 
 
-    private String uploadFileToS3(MultipartFile file) throws Exception {
+    private String uploadFileToS3(MultipartFile file) throws Exception, IOException {
         // AWS S3 Bucket details
         String bucketName = "playpal-dev";
         String key = "uploads/" + file.getOriginalFilename(); // or use a custom key
@@ -403,6 +412,8 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
         // Close the S3 client
         s3.close();
+
+
 
         // Return the file URL (Assuming public access or you can generate a pre-signed URL)
         return "https://" + cloudfront  + key;

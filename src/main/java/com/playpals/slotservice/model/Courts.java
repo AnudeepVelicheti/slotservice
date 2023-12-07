@@ -1,11 +1,6 @@
 package com.playpals.slotservice.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-
+import javax.persistence.*;
 
 
 @Entity
@@ -13,6 +8,7 @@ import javax.persistence.Table;
 public class Courts {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
 	

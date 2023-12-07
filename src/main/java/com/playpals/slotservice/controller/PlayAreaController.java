@@ -31,8 +31,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "*")
-
 public class PlayAreaController {
 
     @Autowired
@@ -59,13 +57,13 @@ public class PlayAreaController {
 
     @PostMapping(path = "/api/createPlayArea", consumes = {"multipart/form-data"})
     public ResponseEntity<ApiResponse> createPlayArea(HttpServletRequest request, @RequestParam String playAreaRequest, @RequestParam("files") MultipartFile[] files) throws IOException
-{
+    {
 
-    ObjectMapper objectMapper = new ObjectMapper();
-    PlayAreaRequest playAreaRequest1 = objectMapper.readValue(playAreaRequest, PlayAreaRequest.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        PlayAreaRequest playAreaRequest1 = objectMapper.readValue(playAreaRequest, PlayAreaRequest.class);
 
 
-    com.playpals.slotservice.pojo.ApiResponse response = new com.playpals.slotservice.pojo.ApiResponse();
+        com.playpals.slotservice.pojo.ApiResponse response = new com.playpals.slotservice.pojo.ApiResponse();
         try {
             // Call the service method to create play area
             playAreaService.createPlayArea(playAreaRequest1, files);
@@ -116,7 +114,7 @@ public class PlayAreaController {
 
 
         ApiResponse response=new ApiResponse();
-       try {
+        try {
             playAreaService.updatePlayArea(playAreaId, playAreaRequest2, files);
             response.setResult(true);
             response.setStatusCode(200);
@@ -199,7 +197,7 @@ public class PlayAreaController {
                     playAreaPojo.setCountry(playArea.getCountry());
                     playAreaPojo.setComments(playArea.getComments());
                     playAreaPojo.setName(playArea.getName());
-                    playAreaPojo.setOwner(playArea.getOwner());
+                    playAreaPojo.setOwner(userRepository.getUserNameById(playArea.getOwner()));
                     playAreaPojo.setStatus(playArea.getStatus());
                     playAreaPojo.setZipcode(playArea.getZipcode());// Set other fields as needed
 
@@ -230,7 +228,7 @@ public class PlayAreaController {
                     playAreaPojo.setCountry(playArea.getCountry());
                     playAreaPojo.setComments(playArea.getComments());
                     playAreaPojo.setName(playArea.getName());
-                    playAreaPojo.setOwner(playArea.getOwner());
+                    playAreaPojo.setOwner(userRepository.getUserNameById(playArea.getOwner()));
                     playAreaPojo.setStatus(playArea.getStatus());
                     playAreaPojo.setZipcode(playArea.getZipcode());// Set other fields as needed
 
@@ -284,6 +282,7 @@ public class PlayAreaController {
                 .map(PlayAreaDoc::getS3Url)
                 .collect(Collectors.toList());
 
+
         PlayAreaPojo playAreaPojo = new PlayAreaPojo();
         playAreaPojo.setId(playArea.getId());
         playAreaPojo.setDocUrls(docUrls);
@@ -293,7 +292,7 @@ public class PlayAreaController {
         playAreaPojo.setCountry(playArea.getCountry());
         playAreaPojo.setComments(playArea.getComments());
         playAreaPojo.setName(playArea.getName());
-        playAreaPojo.setOwner(playArea.getOwner());
+        playAreaPojo.setOwner(userRepository.getUserNameById(playArea.getOwner()));
         playAreaPojo.setStatus(playArea.getStatus());
         playAreaPojo.setZipcode(playArea.getZipcode());// Set other fields as needed
 

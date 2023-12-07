@@ -17,7 +17,7 @@ public class PlayAreaPojo {
 
     @Getter
     @Setter
-    private Integer owner;
+    private String owner;
 
     @Getter
     @Setter
@@ -71,11 +71,11 @@ public class PlayAreaPojo {
         this.name = name;
     }
 
-    public Integer getOwner() {
+    public String getOwner() {
         return owner;
     }
 
-    public void setOwner(Integer owner) {
+    public void setOwner(String owner) {
         this.owner = owner;
     }
 
@@ -155,7 +155,7 @@ public class PlayAreaPojo {
     public PlayAreaPojo() {
     }
 
-    public PlayAreaPojo(Integer id, String name, Integer owner, String address1, String address2, String city,
+    public PlayAreaPojo(Integer id, String name, String owner, String address1, String address2, String city,
                         String state, String country, Integer zipcode, String status, String comments,
                         List<String> docUrls) {
         this.id = id;

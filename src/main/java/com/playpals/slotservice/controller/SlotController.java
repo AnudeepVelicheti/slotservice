@@ -18,7 +18,6 @@ import com.playpals.slotservice.service.CourtService;
 import com.playpals.slotservice.service.SlotService;
 
 @RestController
-@CrossOrigin(origins = "*")
 public class SlotController {
 
 	@Autowired

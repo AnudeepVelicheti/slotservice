@@ -416,7 +416,7 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
 
         // Return the file URL (Assuming public access or you can generate a pre-signed URL)
-        return "https://" + cloudfront  + key;
+        return "https://" + cloudfront  +"/" +key;
     }
 
     public static String getFileExtension(MultipartFile file) {

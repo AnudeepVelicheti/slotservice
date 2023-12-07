@@ -91,18 +91,33 @@ public class PlayAreaController {
     @PostMapping(path = "/api/updatePlayArea", consumes = {"multipart/form-data"})
     public ResponseEntity<ApiResponse> updatePlayArea(
             @RequestParam("playAreaId") Integer playAreaId,
-         @RequestParam String playAreaRequest,
-//            @RequestParam("files") List<MultipartFile> files
+            @RequestParam String playAreaRequest,
             @RequestParam("files") MultipartFile[] files) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        PlayAreaRequest playAreaRequest1 = objectMapper.readValue(playAreaRequest, PlayAreaRequest.class);
+        PlayAreaIdRequest playAreaRequest1 = objectMapper.readValue(playAreaRequest, PlayAreaIdRequest.class);
+
+        PlayAreaRequest playAreaRequest2 = new PlayAreaRequest();
+        playAreaRequest2.setCity(playAreaRequest1.getCity());
+        playAreaRequest2.setCountry(playAreaRequest1.getCountry());
+        playAreaRequest2.setAddress1(playAreaRequest1.getAddress1());
+        playAreaRequest2.setAddress2(playAreaRequest1.getAddress2());
+        playAreaRequest2.setCourts(playAreaRequest1.getCourts());
+        playAreaRequest2.setOwner(playAreaRequest1.getOwner());
+        playAreaRequest2.setSports(playAreaRequest1.getSports());
+        playAreaRequest2.setStartTime(playAreaRequest1.getStartTime());
+        playAreaRequest2.setEndTime(playAreaRequest1.getEndTime());
+        playAreaRequest2.setState(playAreaRequest1.getState());
+        playAreaRequest2.setName(playAreaRequest1.getName());
+        playAreaRequest2.setZipcode(playAreaRequest1.getZipcode());
+
+
 
 
 
         ApiResponse response=new ApiResponse();
        try {
-            playAreaService.updatePlayArea(playAreaId, playAreaRequest1, files);
+            playAreaService.updatePlayArea(playAreaId, playAreaRequest2, files);
             response.setResult(true);
             response.setStatusCode(200);
             response.setStatusCodeDescription("OK");

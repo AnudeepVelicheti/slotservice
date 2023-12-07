@@ -19,9 +19,11 @@ public interface CourtRepository extends  JpaRepository<Courts, Integer>{
 Optional<List<Courts>> findCourtsByTime(int playAreaId, int sportId);
 
 
-    void deleteByPlayAreaId(Integer newPlayAreaId);
+    void deleteByPlayAreaId(Integer PlayAreaId);
 
     boolean existsByPlayAreaIdAndSportIdAndName(Integer newPlayAreaId, int id, String courtName);
 
     boolean existsByPlayAreaIdAndSportId(Integer newPlayAreaId, int sportId);
+
+    List<Courts> findByPlayAreaId(Integer playAreaId);
 }

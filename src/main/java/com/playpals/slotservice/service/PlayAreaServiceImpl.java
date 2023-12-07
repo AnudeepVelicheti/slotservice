@@ -31,6 +31,7 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -51,6 +52,15 @@ public class PlayAreaServiceImpl implements PlayAreaService {
 
     @Autowired
     private SlotRepository slotRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private EventSlotRepository eventSlotRepository;
+
+    @Autowired
+    private EventUsersRepository eventUsersRepository;
 
 
 
@@ -430,24 +440,30 @@ public class PlayAreaServiceImpl implements PlayAreaService {
             Optional<PlayArea> playAreaOptional = playAreaRepository.findById(playAreaId);
 
             if (playAreaOptional.isPresent()) {
-                // Step 2: Check and delete associated records in other tables (PlayAreaDoc, PlayAreaTiming, PlayAreaSport)
+                eventSlotRepository.deleteByPlayAreaId(playAreaId);
 
-                // Check and delete PlayAreaDocs
-                List<PlayAreaDoc> playAreaDocs = playAreaDocRepository.findByPlayAreaId(playAreaId);
-                playAreaDocRepository.deleteAll(playAreaDocs);
 
-                // Check and delete PlayAreaTimings
-                List<PlayAreaTiming> playAreaTimings = playAreaTimingRepository.findByPlayAreaId(playAreaId);
-                playAreaTimingRepository.deleteAll(playAreaTimings);
 
-                // Check and delete PlayAreaSports
-                List<PlayAreaSport> playAreaSports = playAreaSportRepository.findByPlayAreaId(playAreaId);
-                playAreaSportRepository.deleteAll(playAreaSports);
 
-                // Step 3: Update foreign key in child table (event_slots)
-//                slotRepository.updatePlayAreaIdToNull(playAreaId);
+                List<Integer> eventIds = eventRepository.findByPlayAreaId(playAreaId)
+                        .stream()
+                        .map(Event::getId)
+                        .collect(Collectors.toList());
 
-                // Step 4: Delete PlayArea
+
+                eventUsersRepository.deleteByEventIdIn(eventIds);
+                eventRepository.deleteByPlayAreaId(playAreaId);
+
+
+                // Delete associated records in play_area_docs and play_area_timings
+                playAreaDocRepository.deleteByPlayAreaId(playAreaId);
+                playAreaTimingRepository.deleteByPlayAreaId(playAreaId);
+
+                // Delete associated records in play_area_sports and courts
+                playAreaSportRepository.deleteByPlayAreaId(playAreaId);
+                courtsRepository.deleteByPlayAreaId(playAreaId);
+
+                // Finally, delete the play area
                 playAreaRepository.deleteById(playAreaId);
             } else {
                 // Handle the case where the PlayArea with the given ID doesn't exist

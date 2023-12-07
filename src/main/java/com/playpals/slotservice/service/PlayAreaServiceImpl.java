@@ -174,7 +174,7 @@ public class PlayAreaServiceImpl implements PlayAreaService {
             playAreaSportRepository.deleteByPlayAreaId(newPlayAreaId);
 
             // Loop through sport IDs (1 to 8) and create courts
-            for (int sportId = 1; sportId <= 8; sportId++) {
+            for (int sportId = 1; sportId <= 1; sportId++) {
                 boolean courtExists = courtsRepository.existsByPlayAreaIdAndSportId(newPlayAreaId, sportId);
 
                 if (!courtExists) {

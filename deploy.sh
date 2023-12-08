@@ -24,4 +24,4 @@ fi
 docker pull $ECR_REPO_URI:latest
 
 # Run the new Docker container with the static name
-docker run -d --name $CONTAINER_NAME -p 8080:8080 $ECR_REPO_URI:latest
+docker run -d --name $CONTAINER_NAME --log-driver=awslogs --log-opt awslogs-region=us-east-2 --log-opt awslogs-group=Playpal_PlayArea_Backend -p 8080:8080 $ECR_REPO_URI:latest

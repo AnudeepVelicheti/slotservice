@@ -15,4 +15,7 @@ phases:
       - docker push public.ecr.aws/r2n9m4w8/playpalrepo:latest
       - echo '[{"name":"'$IMAGE_CONTAINER_NAME'"}]' > imagedefinitions.json
 artifacts:
-  files: imagedefinitions.json
+  files: 
+      - imagedefinitions.json
+      - appspec.yml
+      - deploy.sh
